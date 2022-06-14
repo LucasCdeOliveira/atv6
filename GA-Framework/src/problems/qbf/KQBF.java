@@ -118,6 +118,12 @@ public class KQBF implements Evaluator<Integer> {
 		return evaluateWeightQBF();
 	}
 
+	@Override
+	public Boolean shouldInsert(Integer cand, Solution<Integer> sol){
+		setVariables(sol);
+		return evaluateWeightQBF() + W[cand] <= capacity;
+	}
+
 	/**
 	 * Evaluates a QBF by calculating the matrix multiplication that defines the
 	 * QBF: f(x) = x'.A.x .

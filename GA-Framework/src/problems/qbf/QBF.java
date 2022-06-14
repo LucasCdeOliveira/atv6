@@ -106,6 +106,11 @@ public class QBF implements Evaluator<Integer> {
 		return 0.0;
 	}
 
+	@Override
+	public Boolean shouldInsert(Integer cand, Solution<Integer> sol){
+		return Boolean.TRUE;
+	}
+
 	/**
 	 * Evaluates a QBF by calculating the matrix multiplication that defines the
 	 * QBF: f(x) = x'.A.x .

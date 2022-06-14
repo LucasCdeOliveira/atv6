@@ -33,7 +33,9 @@ public interface Evaluator<E> {
 
 	public abstract Double evaluateWeight(Solution<E> sol);
 
-		/**
+	public abstract Boolean shouldInsert(E cand, Solution<E> sol);
+
+	/**
 	 * Evaluates the cost variation of inserting an element into a solution
 	 * according to an objective function.
 	 * 
