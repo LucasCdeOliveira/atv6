@@ -77,18 +77,17 @@ public class GA_KQBF extends AbstractGA<Integer, Integer> {
 	 */
 	@Override
 	protected Chromosome generateRandomChromosome() {
-
-		Chromosome chromosome = new Chromosome();
-		for (int i = 0; i < chromosomeSize; i++) {
-			chromosome.add(rng.nextInt(2));
+		for(;;){
+			Chromosome chromosome = new Chromosome();
+			for (int i = 0; i < chromosomeSize; i++) {
+				chromosome.add(rng.nextInt(2));
+			}
+			//Evaluating if the chromosome is valid
+			if(ObjFunction.evaluateWeight(decode(chromosome)) <= ((KQBF)ObjFunction).getCapacity()){
+				//return when it's valid
+				return chromosome;
+			}
 		}
-
-		//While a infeasible solution is generated I try to generate another
-		Solution<Integer> actualSol = decode(chromosome);
-		if(ObjFunction.evaluateWeight(actualSol) > ((KQBF)ObjFunction).getCapacity())
-			return generateRandomChromosome();
-
-		return chromosome;
 	}
 
 	/*
@@ -115,7 +114,7 @@ public class GA_KQBF extends AbstractGA<Integer, Integer> {
 	protected void mutateGene(Chromosome chromosome, Integer locus) {
 		Integer oldGene = chromosome.get(locus);
 		chromosome.set(locus, 1 - chromosome.get(locus));
-		if(ObjFunction.evaluateWeight(decode(chromosome)) < ((KQBF)ObjFunction).getCapacity())
+		if(ObjFunction.evaluateWeight(decode(chromosome)) <= ((KQBF)ObjFunction).getCapacity())
 			//This is a valid mutation because it doesn't exceed the weight
 			//So I can change in the original chromosome
 			chromosome.set(locus, 1 - chromosome.get(locus));
@@ -153,14 +152,14 @@ public class GA_KQBF extends AbstractGA<Integer, Integer> {
 			//If the parents can't generate childs with valid weight I just copy the parents to the next population
 			//Since I know the parents have valid weights
 
-			if(ObjFunction.evaluateWeight(decode(offspring1)) < ((KQBF)ObjFunction).getCapacity())
+			if(ObjFunction.evaluateWeight(decode(offspring1)) <= ((KQBF)ObjFunction).getCapacity())
 				//Child 1 have a valid weight
 				offsprings.add(offspring1);
 			else
 				//Child 1 doesn't have a valid weight
 				offsprings.add(parent1);
 
-			if(ObjFunction.evaluateWeight(decode(offspring2)) < ((KQBF)ObjFunction).getCapacity())
+			if(ObjFunction.evaluateWeight(decode(offspring2)) <= ((KQBF)ObjFunction).getCapacity())
 				//Child 2 have a valid weight
 				offsprings.add(offspring2);
 			else
