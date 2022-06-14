@@ -6,6 +6,8 @@ import problems.qbf.QBF;
 import solutions.Solution;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Metaheuristic GA (Genetic Algorithm) for
@@ -72,25 +74,34 @@ public class GA_KQBF extends AbstractGA<Integer, Integer> {
      */
     @Override
     protected Chromosome generateRandomChromosome() {
-        for (; ; ) {
-            Chromosome chromosome = new Chromosome();
 
-            for (int i = 0; i < chromosomeSize; i++) {
-                //I only randomize the possible insertion if the gene fits in the chromosome
-                if (ObjFunction.shouldInsert(i, decode(chromosome))) {
-                    chromosome.add(rng.nextInt(2));
-                } else {
-                    //otherwise I can't add the gene to the chromossome
-                    chromosome.add(0);
-                }
-            }
-            //Evaluating if the chromosome is valid
-            if (ObjFunction.evaluateWeight(decode(chromosome)) <= ((KQBF) ObjFunction).getCapacity()) {
-                //return when it's valid
-                System.out.println("find valid chromosome");
-                return chromosome;
+        Chromosome chromosome = new Chromosome();
+        ArrayList<Integer> identityList = new ArrayList<>();
+
+        //Setting identityList to identify the genes from 0 to 99
+        for (int i = 0; i < chromosomeSize; i++) {
+            identityList.add(i);
+        }
+
+        //Shuffling to randomize the order that the genes will be selected
+        Collections.shuffle(identityList);
+
+        //Setting all genes to 0
+        for (int i = 0; i < chromosomeSize; i++) {
+            chromosome.add(0);
+        }
+
+        for (int i = 0; i < chromosomeSize; i++) {
+            //I only randomize the possible insertion if the gene fits in the chromosome
+            if (ObjFunction.shouldInsert(i, decode(chromosome))) {
+                chromosome.set(i, rng.nextInt(2));
+            } else {
+                //otherwise I can't add the gene to the chromossome
+                chromosome.set(i, 0);
             }
         }
+        return chromosome;
+
     }
 
     /*
