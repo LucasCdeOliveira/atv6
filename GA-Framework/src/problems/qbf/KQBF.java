@@ -90,6 +90,7 @@ public class KQBF implements Evaluator<Integer> {
 		return size;
 	}
 
+	@Override
 	public Double getCapacity() {
 		return capacity;
 	}

@@ -184,6 +184,114 @@ public class GA_KQBF extends AbstractGA<Integer, Integer> {
         return offsprings;
     }
 
+    //remove elements until the chromosome be valid
+    private Chromosome validateChromosome(Chromosome chromosome){
+        while(ObjFunction.evaluateWeight(decode(chromosome)) > ObjFunction.getCapacity()){
+            chromosome.set(getWorstGene(chromosome), 0);
+        }
+        return chromosome;
+    }
+
+    //get the worst gene from chromosome
+    private Integer getWorstGene(Chromosome chromosome){
+        Solution sol = decode(chromosome);
+        Double initialWeight = ObjFunction.evaluateWeight(sol);
+        Integer worstGene = 0;
+        Double worstRate = Double.MAX_VALUE;
+        for (int i = 0; i < chromosomeSize; i++) {
+            Chromosome tempChromosome = new Chromosome();
+            tempChromosome.addAll(chromosome);
+            //removing element i
+            tempChromosome.set(i, 0);
+            Solution newSol = decode(tempChromosome);
+            Double newWeight = ObjFunction.evaluateWeight(newSol);
+            Double newRate = newSol.cost/newWeight;
+            if(newRate < worstRate){
+                worstRate = newRate;
+                worstGene = i;
+            }
+        }
+        return worstGene;
+    }
+
+    //Here instead of useing 2 crosspoints we will randomly decide wich genes will come from parent1 and parent2
+    protected Population universalCrossover(Population parents) {
+
+        Population offsprings = new Population();
+
+        //if 0 we will get from parent1, if 2 we will get from parent2 for offspring1
+        //if 0 we will get from parent2, if 2 we will get from parent1 for offsprint2
+        ArrayList<Integer> pattern = new ArrayList<>();
+        for (int i = 0; i < chromosomeSize; i++){
+            pattern.add(rng.nextInt(2));
+        }
+
+        for (int i = 0; i < popSize; i = i + 2) {
+
+            Chromosome parent1 = parents.get(i);
+            Chromosome parent2 = parents.get(i + 1);
+
+            Chromosome offspring1 = new Chromosome();
+            Chromosome offspring2 = new Chromosome();
+
+            for (int j = 0; j < chromosomeSize; j++) {
+                if (pattern.get(j) == 0) {
+                    offspring1.add(parent1.get(j));
+                    offspring2.add(parent2.get(j));
+                } else {
+                    offspring1.add(parent2.get(j));
+                    offspring2.add(parent1.get(j));
+                }
+            }
+
+            offsprings.add(validateChromosome(offspring1));
+            offsprings.add(validateChromosome(offspring2));
+
+        }
+
+        return offsprings;
+
+    }
+
+    //Because of I typed the chromossome to Integer to validate it
+    @Override
+    public Solution<Integer> solve() {
+
+        /* starts the initial population */
+        Population population = initializePopulation();
+
+        bestChromosome = getBestChromosome(population);
+        bestSol = decode(bestChromosome);
+        System.out.println("(Gen. " + 0 + ") BestSol = " + bestSol);
+
+        /*
+         * enters the main loop and repeats until a given number of generations
+         */
+        for (int g = 1; g <= generations; g++) {
+
+            Population parents = selectParents(population);
+
+            Population offsprings = universalCrossover(parents);
+
+            Population mutants = mutate(offsprings);
+
+            Population newpopulation = selectPopulation(mutants);
+
+            population = newpopulation;
+
+            bestChromosome = getBestChromosome(population);
+
+            if (fitness(bestChromosome) > bestSol.cost) {
+                bestSol = decode(bestChromosome);
+                if (verbose)
+                    System.out.println("(Gen. " + g + ") BestSol = " + bestSol);
+            }
+
+        }
+
+        return bestSol;
+    }
+
     /**
      * A main method used for testing the GA metaheuristic.
      */

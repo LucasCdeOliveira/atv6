@@ -83,6 +83,11 @@ public class QBF implements Evaluator<Integer> {
 		return size;
 	}
 
+	@Override
+	public Double getCapacity() {
+		return Double.MAX_VALUE;
+	}
+
 	/**
 	 * {@inheritDoc} In the case of a QBF, the evaluation correspond to
 	 * computing a matrix multiplication x'.A.x. A better way to evaluate this

@@ -21,6 +21,8 @@ public interface Evaluator<E> {
 	 */
 	public abstract Integer getDomainSize();
 
+	public abstract Double getCapacity();
+
 	/**
 	 * The evaluating function is responsible for returning the mapping value of
 	 * a solution.
